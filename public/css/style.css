@@ -1,0 +1,47 @@
+
+/* FORUMS */
+
+#home-headers > :first-child {
+    min-width: 12em;
+}
+
+#home-headers > :last-child {
+    min-width: 8em;
+}
+
+#forum-headers > :first-child {
+    min-width: 8em;
+}
+
+.edit-btn {
+    color: orange!important;
+}
+
+.delete-btn {
+    color: red!important;
+}
+
+
+/* center the title of the forum page */
+#forum-title {
+    margin: 0 auto;
+}
+
+/* FORM */
+
+#add-names {
+    display: flex;
+    justify-content: space-between;
+}
+
+#add-names > input:not(:first-child) {
+    margin-left: 10px;
+}
+
+.table-add-row {
+    visibility: hidden;
+}
+
+.table-add-row button {
+    visibility: visible;
+}

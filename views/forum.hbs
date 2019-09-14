@@ -1,0 +1,62 @@
+<div class="row m-0">
+    <div class="col p-0">
+        <div class="d-flex text-white bg-info mb-0 p-4">
+            <h1 class="mb-0 h3 w-25 bd-highlight"><a href="/" class="text-white">The Forums</a></h1>
+            <h2 id="forum-title" class="mb-0 h3 flex-shrink-1 bd-highlight">{{ forumTitle }}</h2>
+        </div>
+        <table class="table table-bordered table-striped table-responsive-sm">
+            <thead>
+            <tr id="forum-headers">
+                <th scope="col">Info</th>
+                <th scope="col">Message</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each this.messages as |message|}}
+                <tr>
+                    <td>
+                        <div title="{{ message.name }}">{{ message.username }}</div>
+                        <div>{{ message.date }}</div>
+                        <div>
+                            <a class="edit-btn" title="Edit" data-messageid="{{ message.messageId }}" data-toggle="modal" data-target="#editFormModal">
+                                <i class="material-icons"></i>
+                            </a>
+                            {{#unless @first}}
+                                <a class="delete-btn" title="Delete" data-messageid="{{ message.messageId }}" data-toggle="modal" data-target="#deleteFormModal">
+                                    <i class="material-icons"></i>
+                                </a>
+                            {{/unless}}
+                        </div>
+                    </td>
+                    <td>
+                        <p>
+                            {{ message.message }}
+                        </p>
+                    </td>
+                </tr>
+            {{/each}}
+            <tr class="table-add-row">
+                <td colspan="2">
+                    <button class="add-btn btn btn-info d-block" data-forumid="{{ this.forumId }}" data-toggle="modal" data-target="#addFormModal">Add a Message</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{#> layouts/modal-layout type="add" title="Add a Message" submitText="Post Message" }}
+    {{#*inline "form-content"}}
+        {{> includes/add-form }}
+    {{/inline}}
+{{/layouts/modal-layout}}
+{{#> layouts/modal-layout type="edit" title="Edit a Message" submitText="Save changes" }}
+    {{#*inline "form-content"}}
+        {{> includes/edit-form }}
+    {{/inline}}
+{{/layouts/modal-layout}}
+{{#> layouts/modal-layout type="delete" title="Delete a Message" submitText="Delete Message" }}
+    {{#*inline "form-content"}}
+        {{> includes/delete-form }}
+    {{/inline}}
+{{/layouts/modal-layout}}

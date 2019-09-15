@@ -14,7 +14,7 @@
             {{#each this.messages as |message|}}
                 <tr>
                     <td>
-                        <div title="{{ message.name }}">{{ message.username }}</div>
+                        <a title="{{ message.email }}" data-uid="{{ message.uid }}" href="/user/{{ message.uid }}">{{ message.name }}</a>
                         <div>{{ message.date }}</div>
                         <div>
                             <a class="edit-btn" title="Edit" data-messageid="{{ message.messageId }}" data-toggle="modal" data-target="#editFormModal">

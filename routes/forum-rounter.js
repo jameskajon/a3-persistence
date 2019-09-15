@@ -3,6 +3,11 @@ const forumRouter = express.Router();
 const firebaseAdmin = require("firebase-admin");
 
 const db = firebaseAdmin.firestore();
+const auth = firebaseAdmin.auth();
+
+function formatTimestamp(timestamp) {
+    return (new Date(timestamp.seconds * 1000)).toUTCString()
+}
 
 async function getForum(forumId) {
     let forumDoc = db.collection('forums').doc(forumId);
@@ -20,21 +25,14 @@ async function getForum(forumId) {
     let messagesPromises = messageQuery.get()
         .then(snapshot => {
             return snapshot.docs.map(async function(doc) {
-                return doc.data().poster.get()
-                    .then(userSnapshot => {
-                        return userSnapshot.data();
-                    })
+                return getUserDataUid(doc.data().poster)  // poster is the uid of the poster
                     .then(userData => {
                         return {
                             messageId: doc.id,
                             message: doc.data().message,
-                            date: (new Date(doc.data().date.seconds * 1000)).toUTCString(),
-                            name: `${userData.firstName} ${userData.middleName} ${userData.lastName}`,
-                            username: userData.username,
+                            ... userData,
+                            date: formatTimestamp(doc.data().date),
                         }
-                    })
-                    .catch(err => {
-                        console.log('Error getting documents', err);
                     });
             });
         })
@@ -92,10 +90,16 @@ function getMessageData(forumDoc) {
     let lastMessageQuery = forumDoc.ref.collection('messages').orderBy('date', "desc").limit(1);
     let firstMessagePromise = firstMessageQuery.get()
         .then(snapshot => {return snapshot.docs[0].data()})
-        .then(data => {
+        .then(async data => {
             return {
                 shortDesc: data.message,
-                created: getUserData(data.poster, data.date),
+                created: getUserDataUid(data.poster)  // poster is the uid of the poster
+                    .then(userData => {
+                        return {
+                            ... userData,
+                            date: formatTimestamp(data.date),
+                        }
+                    }),
             }
         })
         .catch(err => {
@@ -105,7 +109,13 @@ function getMessageData(forumDoc) {
         .then(snapshot => {return snapshot.docs[0].data()})
         .then(data => {
             return {
-                lastPost: getUserData(data.poster, data.date),
+                lastPost: getUserDataUid(data.poster)  // poster is the uid of the poster
+                    .then(userData => {
+                        return {
+                            ... userData,
+                            date: formatTimestamp(data.date),
+                        }
+                    }),
             }
         })
         .catch(err => {
@@ -115,23 +125,27 @@ function getMessageData(forumDoc) {
 }
 
 // returns promise
-function getUserData(userRef, timestamp) {
-    return userRef.get()
-        .then(userSnapshot => {
-            return userSnapshot.data();
-        })
-        .then(userData => {
+async function getUserDataUid(uid) {
+    return await auth.getUser(uid)
+        .then(function(userRecord) {
+            // console.log('Successfully fetched user data:', userRecord.toJSON());
             return {
-                date: (new Date(timestamp.seconds * 1000)).toUTCString(),
-                name: `${userData.firstName} ${userData.middleName} ${userData.lastName}`,
-                username: userData.username,
+                uid: uid,
+                name: userRecord.displayName,
+                email: userRecord.email,
+                memberSince: userRecord.metadata.creationTime,  // creation time is already a string in GMT
             }
         })
-        .catch(err => {
-            console.log('Error getting documents', err);
+        .catch(function(error) {
+            console.log('Error fetching user data:', error);
+            return {
+                uid: uid,
+                name: '[deleted]',
+                email: '[deleted]',
+                memberSince: '[deleted]',
+            };
         });
 }
-
 
 // forum list view
 forumRouter.get('/', async function(req, res, next) {
@@ -143,7 +157,7 @@ forumRouter.get('/', async function(req, res, next) {
 forumRouter.get('/forum/:forumId', async function(req, res, next) {
     let context = await getForum(req.params.forumId);
     if (context.forumTitle === undefined && context.messages.length === 0) {
-        res.status(404).send('Page Not found')
+        res.status(404).send('This forum does not exist. It may have been deleted.')
     } else {
         db.collection("forums").doc(req.params.forumId).update({views: firebaseAdmin.firestore.FieldValue.increment(1)})
             .then(function() {
@@ -183,26 +197,11 @@ forumRouter.post('/submit/create', async function(req, res, next) {
             forumId = (await forumDoc).id;
             // adding message and user handled in ADD case
         case "ADD":
-            const newUserData = {
-                firstName: data.firstName,
-                middleName: data.middleName,
-                lastName: data.lastName,
-                username: (data.firstName.substring(0, 1) + data.middleName.substring(0, 1) + data.lastName).toLowerCase(),
-            };
-
-            let userDoc = db.collection("users").add(newUserData)
-                .then(function(docRef) {
-                    // console.log("Document written with ID: ", docRef.id);
-                    return docRef;
-                })
-                .catch(function(error) {
-                    console.error("Error adding document: ", error);
-                });
 
             const newMessageData = {
                 message: data.message,
                 date: addTimestamp,
-                poster: await userDoc,
+                poster: data.uid,
             };
             let messageDoc = db.collection("forums").doc(forumId).collection('messages').add(newMessageData)
                 .then(function(docRef) {
@@ -260,6 +259,25 @@ forumRouter.post('/submit/create', async function(req, res, next) {
     }
     await res.json(respData);
 });
+
+// forum user view
+forumRouter.get('/user/:uid', async function(req, res) {
+    const userData = await getUserDataUid(req.params.uid);
+    const context = {
+        userData: [
+            'Name: ' + userData.name,
+            'Email: ' + userData.email,
+            'Member Since: ' + userData.memberSince,
+        ]
+    };
+    // if (context.forumTitle === undefined && context.messages.length === 0) {
+    //     res.status(404).send('This forum does not exist. It may have been deleted.')
+    // } else {
+    console.log(context);
+    res.render('user', context);
+    // }
+});
+
 
 
 module.exports = forumRouter;

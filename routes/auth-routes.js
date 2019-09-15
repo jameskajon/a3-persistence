@@ -8,7 +8,6 @@ const auth = firebaseAdmin.auth();
 
 authRouter.post('/sign-up', async (req, res) => {
     const data = req.body;
-    let respData = {};
     console.log(data);
     auth.createUser({
             email: data.email,
@@ -56,6 +55,8 @@ authRouter.get('/google', (req, res) => {
     // todo passport
     res.send('logging in with google');
 });
+
+
 
 
 // // Delete users from the beginning, 80 at a time.

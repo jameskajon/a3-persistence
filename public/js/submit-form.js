@@ -2,8 +2,16 @@ function submit(e, url, dataParser, handelResponse) {
     console.log(e, url, dataParser, handelResponse);
     e.preventDefault();  // prevent url form submission
 
-    const data = JSON.stringify(dataParser());
-    console.log("sending: ", data);
+    const jsonData = dataParser();
+    const data = JSON.stringify(jsonData);
+    console.log("form data: ", data);
+
+    if (jsonData.warningStatus === "failed") {
+        const warning = e.target.parentElement.parentElement.querySelector('div#warningAlerts > * > span');
+        warning.textContent = jsonData.warningMsg;
+        warning.parentElement.classList.remove('d-none');
+        return false;
+    }
 
     let request = new Request(url, {
         method: 'POST',
@@ -113,11 +121,12 @@ function closeModal(modal) {
 // PARSE FORM //
 
 function parseAddThreadForm() {
-    console.log("ran parse add");
+
     return {
         action: "ADDTHREAD",
         title: document.getElementById("title").value,
         message: document.getElementById("add-thread-message").value,
+        ...getCurUid(),
     }
 }
 
@@ -127,6 +136,7 @@ function parseAddForm() {
         action: "ADD",
         forumId: curForumId,
         message: document.querySelector("#addFormModal textarea#add-message").value,
+        ...getCurUid(),
     }
 }
 
@@ -135,6 +145,7 @@ function parseDeleteForm() {
         action: "DELETE",
         messageId: curMessageId,
         forumId: curForumId,
+        ...getCurUid(),
     }
 }
 
@@ -144,6 +155,7 @@ function parseEditForm() {
         messageId: curMessageId,
         forumId: curForumId,
         message: document.querySelector("#editFormModal textarea#edit-message").value,
+        ...getCurUid(),
     }
 }
 
@@ -226,6 +238,21 @@ async function handelSignUpResponse(data) {
 // FIREBASE AUTH //
 
 const auth = firebase.auth();
+
+// get uid to send to backend
+function getCurUid() {
+    const user  = auth.currentUser;
+    if (user === null || user === undefined) {
+        return {
+            warningStatus: "failed",
+            warningMsg: "Please sign in before you perform this action.",
+        }
+    } else {
+        return {
+            uid: user.uid,
+        }
+    }
+}
 
 async function firebaseSignInToken(token) {
     if (typeof token !== "string") {

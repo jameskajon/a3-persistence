@@ -32,7 +32,7 @@ function submit(e, url, dataParser, handelResponse) {
 
 
 // add model submit button events and model activation events
-window.onload = function() {
+window.onload = async function() {
     const submitUrl = '/submit/create';
     const submitAuthSignInUrl = '/auth/sign-in';
     const submitAuthSignUpUrl = '/auth/sign-up';
@@ -106,7 +106,7 @@ function parseAddThreadForm() {
     return {
         action: "ADDTHREAD",
         title: document.getElementById("title").value,
-        message: document.getElementById("message").value,
+        message: document.getElementById("add-thread-message").value,
     }
 }
 
@@ -115,7 +115,7 @@ function parseAddForm() {
     return {
         action: "ADD",
         forumId: curForumId,
-        message: document.querySelector("#addFormModal textarea#message").value,
+        message: document.querySelector("#addFormModal textarea#add-message").value,
     }
 }
 
@@ -132,7 +132,7 @@ function parseEditForm() {
         action: "EDIT",
         messageId: curMessageId,
         forumId: curForumId,
-        message: document.querySelector("#editFormModal textarea#message").value,
+        message: document.querySelector("#editFormModal textarea#edit-message").value,
     }
 }
 
@@ -202,6 +202,7 @@ async function handelSignUpResponse(data) {
         document.querySelector('#sign-up-alert > span').textContent = data.failMsg;
         document.getElementById('sign-up-alert').classList.remove('d-none')
     }
+    update();
 }
 
 function handelSignOutResponse(data) {
@@ -235,11 +236,28 @@ async function firebaseSignOut() {
     return await auth.signOut()
         .then(function() {
             console.log('user signed out');
+            update();
         })
 }
 
 // DISPLAY USER //
 
+firebase.auth().onAuthStateChanged(update);
 
+function update(user) {
+    if (user === null || user === undefined) {
+        user = auth.currentUser;
+    }
+    updateNavButtons(user);
+    updateNavName(user);
+}
+
+function updateNavButtons(user) {
+
+}
+
+function updateNavName(user) {
+    document.querySelector('nav> #userDisplayName').textContent = (user === null || user === undefined) ? "" : "Welcome " + user.displayName;
+}
 
 

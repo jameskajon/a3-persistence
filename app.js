@@ -1,10 +1,18 @@
 const express = require('express'),
     bodyParser = require('body-parser'),
     hbs = require('express-handlebars'),
-    morgan = require('morgan');
+    morgan = require('morgan'),
+    firebaseAdmin = require("firebase-admin");
 const app = express();
 const path = require('path');
 const port = 3000;
+
+const serviceAccount = require("./cs4241-a3-persistence-firebase-adminsdk-78lyy-8d69e81afb.json");
+firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert(serviceAccount),
+    databaseURL: "https://cs4241-a2-shortstack.firebaseio.com",
+    serviceAccountId: "firebase-adminsdk-78lyy@cs4241-a3-persistence.iam.gserviceaccount.com",
+});
 
 const forumRouter = require('./routes/forum-rounter');
 const authRouter = require('./routes/auth-routes');

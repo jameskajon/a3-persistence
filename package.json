@@ -12,6 +12,8 @@
     "express-handlebars": "^3.1.0",
     "firebase-admin": "^8.5.0",
     "mime": "^2.4.4",
-    "morgan": "^1.9.1"
+    "morgan": "^1.9.1",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^2.0.0"
   }
 }

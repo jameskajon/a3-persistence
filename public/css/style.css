@@ -29,14 +29,14 @@
 
 /* FORM */
 
-#add-names {
-    display: flex;
-    justify-content: space-between;
-}
+/*#add-names {*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*}*/
 
-#add-names > input:not(:first-child) {
-    margin-left: 10px;
-}
+/*#add-names > input:not(:first-child) {*/
+/*    margin-left: 10px;*/
+/*}*/
 
 .table-add-row {
     visibility: hidden;
@@ -44,4 +44,11 @@
 
 .table-add-row button {
     visibility: visible;
+}
+
+/* MODALS */
+
+.modal-open{
+    overflow:auto;
+    padding-right:0 !important;
 }

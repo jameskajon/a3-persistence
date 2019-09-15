@@ -2,13 +2,6 @@ const express = require('express');
 const forumRouter = express.Router();
 const firebaseAdmin = require("firebase-admin");
 
-const serviceAccount = require("../cs4241-a3-persistence-firebase-adminsdk-78lyy-8d69e81afb.json");
-
-firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.cert(serviceAccount),
-    databaseURL: "https://cs4241-a2-shortstack.firebaseio.com"
-});
-
 const db = firebaseAdmin.firestore();
 
 async function getForum(forumId) {

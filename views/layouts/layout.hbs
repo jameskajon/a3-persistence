@@ -7,16 +7,65 @@
 
     <meta charset="utf-8">
     <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/submit-form.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
 <body>
+    <nav class="navbar navbar-light bg-light">
+        <a id="signinSubmitBtn" class="navbar-brand">
+            <img src="/assets/images/favicon-32x32.png" width="32" height="32" class="d-inline-block align-top" alt="">
+            The Forums
+        </a>
+        <div class="nav navbar-right">
+            <button class="btn" data-toggle="modal" data-target="#signUpFormModal">
+                Sign Up
+            </button>
+            <button class="btn" data-toggle="modal" data-target="#signInFormModal">
+                Login
+            </button>
+        </div>
+    </nav>
     {{{ body }}}
+    <!-- sign in modals -->
+    {{#> layouts/modal-layout type="signIn" title="Login" submitText="Login" }}
+        {{#*inline "form-content"}}
+            {{> includes/auth-sign-in }}
+        {{/inline}}
+    {{/layouts/modal-layout}}
+    {{#> layouts/modal-layout type="signUp" title="Sign Up" submitText="Sign Up" }}
+        {{#*inline "form-content"}}
+            {{> includes/auth-sign-up }}
+        {{/inline}}
+    {{/layouts/modal-layout}}
 
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/6.6.1/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/6.6.1/firebase-auth.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDA-eSYCkfp_rghIlz4-N8KuWsydjarokc",
+            authDomain: "cs4241-a3-persistence.firebaseapp.com",
+            databaseURL: "https://cs4241-a3-persistence.firebaseio.com",
+            projectId: "cs4241-a3-persistence",
+            storageBucket: "cs4241-a3-persistence.appspot.com",
+            messagingSenderId: "359117328600",
+            appId: "1:359117328600:web:952cd88ac77f29a26487ad"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <!-- Custom JS -->
+    <script src="/js/submit-form.js"></script>
+
+    <!-- Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

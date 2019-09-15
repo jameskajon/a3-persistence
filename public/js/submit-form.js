@@ -1,11 +1,10 @@
-function submit(e, dataParser, handelResponse) {
-    console.log(e, dataParser, handelResponse);
+function submit(e, url, dataParser, handelResponse) {
+    console.log(e, url, dataParser, handelResponse);
     e.preventDefault();  // prevent url form submission
 
     const data = JSON.stringify(dataParser());
     console.log("sending: ", data);
 
-    const url = '/submit/create';
     let request = new Request(url, {
         method: 'POST',
         body: data,
@@ -26,20 +25,29 @@ function submit(e, dataParser, handelResponse) {
         .catch(function (error) {
             console.log( error );
         });
-
+    console.log('done submitting');
     return false;
 }
 
 
+
 // add model submit button events and model activation events
 window.onload = function() {
+    const submitUrl = '/submit/create';
+    const submitAuthSignInUrl = '/auth/sign-in';
+    const submitAuthSignUpUrl = '/auth/sign-up';
+    // bind sign in and sign up events
+    document.getElementById("signInSubmitBtn").onclick = ((e) => submit(e, submitAuthSignInUrl, parseSignInForm, handelSignInResponse));
+    document.getElementById("signUpSubmitBtn").onclick = ((e) => submit(e, submitAuthSignUpUrl, parseSignUpForm, handelSignUpResponse));
+    // bind page specific events
     if (document.getElementById("addThreadSubmitBtn")) {
-        document.getElementById("addThreadSubmitBtn").onclick = ((e) => submit(e, parseAddThreadForm, handelAddThreadResponse));
+        // if on index
+        document.getElementById("addThreadSubmitBtn").onclick = ((e) => submit(e, submitUrl, parseAddThreadForm, handelAddThreadResponse));
     } else {
         // if on forum page
-        document.getElementById("addSubmitBtn").onclick = ((e) => submit(e, parseAddForm, handelAddResponse));
-        document.getElementById("deleteSubmitBtn").onclick = ((e) => submit(e, parseDeleteForm, handelDeleteResponse));
-        document.getElementById("editSubmitBtn").onclick = ((e) => submit(e, parseEditForm, handelEditResponse));
+        document.getElementById("addSubmitBtn").onclick = ((e) => submit(e, submitUrl, parseAddForm, handelAddResponse));
+        document.getElementById("deleteSubmitBtn").onclick = ((e) => submit(e, submitUrl, parseDeleteForm, handelDeleteResponse));
+        document.getElementById("editSubmitBtn").onclick = ((e) => submit(e, submitUrl, parseEditForm, handelEditResponse));
         // transfer data from button press to forum
         for (let addBtn of document.getElementsByClassName('add-btn')) {
             addBtn.onclick = addClick;
@@ -78,15 +86,37 @@ function editClick(btn) {
 }
 
 
+// CLOSE MODAL //
+
+// will remove all modal backdrops
+function closeModal(modal) {
+    modal.querySelector('button.close').click();
+    modal.querySelector('form').reset();
+    // change state like in hidden modal
+    // modal.classList.remove('show');
+    // modal.setAttribute('aria-hidden', 'true');
+    // modal.setAttribute('style', 'display: none');
+    // modal.removeAttribute('aria-modal');
+    //
+    // // get modal backdrops
+    // const modalsBackdrops = document.getElementsByClassName('modal-backdrop');
+    //
+    // // remove every modal backdrop
+    // for(let i=0; i<modalsBackdrops.length; i++) {
+    //     document.body.removeChild(modalsBackdrops[i]);
+    // }
+    //
+    // document.body.removeAttribute('style');
+    // document.body.classList.remove('modal-open');
+}
+
+
 // PARSE FORM //
 
 function parseAddThreadForm() {
     console.log("ran parse add");
     return {
         action: "ADDTHREAD",
-        firstName: document.getElementById("first-name").value,
-        middleName: document.getElementById("middle-name").value,
-        lastName: document.getElementById("last-name").value,
         title: document.getElementById("title").value,
         message: document.getElementById("message").value,
     }
@@ -97,9 +127,6 @@ function parseAddForm() {
     return {
         action: "ADD",
         forumId: curForumId,
-        firstName: document.getElementById("first-name").value,
-        middleName: document.getElementById("middle-name").value,
-        lastName: document.getElementById("last-name").value,
         message: document.querySelector("#addFormModal textarea#message").value,
     }
 }
@@ -118,6 +145,29 @@ function parseEditForm() {
         messageId: curMessageId,
         forumId: curForumId,
         message: document.querySelector("#editFormModal textarea#message").value,
+    }
+}
+
+function parseSignInForm() {
+    return {
+        email: document.getElementById("sign-in-email").value,
+        password: document.getElementById("sign-in-password").value,
+    }
+}
+
+function parseSignUpForm() {
+    return {
+        name: document.getElementById("sign-up-name").value,
+        email: document.getElementById("sign-up-email").value,
+        password: document.getElementById("sign-up-password").value,
+    }
+}
+
+function parseSignOutForm() {
+    return {
+        // name: document.getElementById("sign-up-name").value,
+        // email: document.getElementById("sign-up-email").value,
+        // password: document.getElementById("sign-up-password").value,
     }
 }
 
@@ -148,3 +198,34 @@ function handelEditResponse(data) {
     location.reload();
 }
 
+function handelSignInResponse(data) {
+    const modal = document.getElementById('signInFormModal');
+    closeModal(modal);
+}
+
+function handelSignUpResponse(data) {
+    const modal = document.getElementById('signUpFormModal');
+    closeModal(modal);
+}
+
+function handelSignOutResponse(data) {
+    console.log("logged out");
+}
+
+
+
+// FIREBASE AUTH //
+
+// firebase initialized with the auth app in layout.hbs
+// if (firebase === null) {
+//     firebase = {};
+// }
+//
+// function firebaseSignIn(token) {
+//     firebase.auth().signInWithCustomToken(token).catch(function(error) {
+//         // Handle Errors here.
+//         var errorCode = error.code;
+//         var errorMessage = error.message;
+//         // ...
+//     });
+// }

@@ -29,15 +29,25 @@ function submit(e, url, dataParser, handelResponse) {
     return false;
 }
 
+function signInSubmit(e, dataParser, handelResponse) {
+    console.log(e, dataParser, handelResponse);
+    e.preventDefault();  // prevent url form submission
+
+    const data = dataParser();
+    console.log("signing in: ", data);
+    console.log( data );
+    handelResponse(data);
+
+}
+
 
 
 // add model submit button events and model activation events
 window.onload = async function() {
     const submitUrl = '/submit/create';
-    const submitAuthSignInUrl = '/auth/sign-in';
     const submitAuthSignUpUrl = '/auth/sign-up';
     // bind sign in and sign up events
-    document.getElementById("signInSubmitBtn").onclick = ((e) => submit(e, submitAuthSignInUrl, parseSignInForm, handelSignInResponse));
+    document.getElementById("signInSubmitBtn").onclick = ((e) => signInSubmit(e, parseSignInForm, handelSignInResponse));
     document.getElementById("signUpSubmitBtn").onclick = ((e) => submit(e, submitAuthSignUpUrl, parseSignUpForm, handelSignUpResponse));
     // bind page specific events
     if (document.getElementById("addThreadSubmitBtn")) {
@@ -92,6 +102,7 @@ function editClick(btn) {
 function closeModal(modal) {
     modal.querySelector('.modal-header > button.close').click();
     modal.querySelector('form').reset();
+    modal.querySelector('.alert').classList.remove('d-none')
 }
 
 // function closeModalAlert(modal) {
@@ -151,14 +162,6 @@ function parseSignUpForm() {
     }
 }
 
-function parseSignOutForm() {
-    return {
-        // name: document.getElementById("sign-up-name").value,
-        // email: document.getElementById("sign-up-email").value,
-        // password: document.getElementById("sign-up-password").value,
-    }
-}
-
 
 // HANDEL RESPONSE //
 
@@ -186,27 +189,36 @@ function handelEditResponse(data) {
     location.reload();
 }
 
-function handelSignInResponse(data) {
-    const modal = document.getElementById('signInFormModal');
-    closeModal(modal);
+// sign in's are done client side
+async function handelSignInResponse(data) {
+    firebaseSignInEmailPassword(data.email, data.password)
+        .then(function() {
+            const modal = document.getElementById('signInFormModal');
+            closeModal(modal);
+            console.log("you are now logged in");
+        })
+        .catch(function(error) {
+            console.log("sign in failed");
+            console.log(error.message);
+            document.querySelector('#sign-in-alert > span').textContent = error.message;
+            document.getElementById('sign-in-alert').classList.remove('d-none');
+        });
 }
 
 async function handelSignUpResponse(data) {
-    if (await firebaseSignIn(data.customToken) === true) {
+    if (await firebaseSignInToken(data.customToken) === true) {
         const modal = document.getElementById('signUpFormModal');
         closeModal(modal);
         console.log("you are now logged in");
     } else {
         console.log("sign up failed");
         console.log(data.failMsg);
-        document.querySelector('#sign-up-alert > span').textContent = data.failMsg;
-        document.getElementById('sign-up-alert').classList.remove('d-none')
+        if (data.failMsg) {
+            document.querySelector('#sign-up-alert > span').textContent = data.failMsg;
+            document.getElementById('sign-up-alert').classList.remove('d-none');
+        }
     }
-    update();
-}
-
-function handelSignOutResponse(data) {
-    console.log("logged out");
+    // update();
 }
 
 
@@ -215,7 +227,7 @@ function handelSignOutResponse(data) {
 
 const auth = firebase.auth();
 
-async function firebaseSignIn(token) {
+async function firebaseSignInToken(token) {
     if (typeof token !== "string") {
         // if token is bad dont bother trying to sign in
         return false;
@@ -232,11 +244,19 @@ async function firebaseSignIn(token) {
         });
 }
 
+async function firebaseSignInEmailPassword(email, password) {
+    if (typeof email !== "string" || typeof password !== "string") {
+        // if creds are bad dont bother trying to sign in
+        return false;
+    }
+    return auth.signInWithEmailAndPassword(email, password);
+}
+
 async function firebaseSignOut() {
     return await auth.signOut()
         .then(function() {
             console.log('user signed out');
-            update();
+            // update();
         })
 }
 
@@ -253,7 +273,15 @@ function update(user) {
 }
 
 function updateNavButtons(user) {
-
+    if (user === null || user === undefined) {
+        document.getElementById('signUpBtn').classList.remove('d-none');
+        document.getElementById('signInBtn').classList.remove('d-none');
+        document.getElementById('signOutBtn').classList.add('d-none');
+    } else {
+        document.getElementById('signUpBtn').classList.add('d-none');
+        document.getElementById('signInBtn').classList.add('d-none');
+        document.getElementById('signOutBtn').classList.remove('d-none');
+    }
 }
 
 function updateNavName(user) {

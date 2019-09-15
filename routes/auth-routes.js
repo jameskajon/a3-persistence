@@ -5,11 +5,6 @@ const firebaseAdmin = require("firebase-admin");
 
 const auth = firebaseAdmin.auth();
 
-authRouter.post('/sign-in', (req, res) => {
-    const data = req.body;
-    console.log(data);
-    res.json({});
-});
 
 authRouter.post('/sign-up', async (req, res) => {
     const data = req.body;
@@ -61,5 +56,28 @@ authRouter.get('/google', (req, res) => {
     // todo passport
     res.send('logging in with google');
 });
+
+
+// // Delete users from the beginning, 80 at a time.
+// function deleteAllUsers(nextPageToken) {
+//     // List batch of users, 80 at a time.
+//     auth.listUsers(80, nextPageToken)
+//         .then(function(listUsersResult) {
+//             listUsersResult.users.forEach(function(userRecord) {
+//                 console.log('Deleting', userRecord.displayName);
+//                 auth.deleteUser(userRecord.uid).catch(function(error) {
+//                     console.log('Error deleting user:', error);
+//                 });
+//             });
+//             if (listUsersResult.pageToken) {
+//                 // List next batch of users.
+//                 listAllUsers(listUsersResult.pageToken);
+//             }
+//         })
+//         .catch(function(error) {
+//             console.log('Error listing users:', error);
+//         });
+// }
+// deleteAllUsers();
 
 module.exports = authRouter;

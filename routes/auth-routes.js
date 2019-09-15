@@ -27,34 +27,23 @@ authRouter.post('/sign-up', async (req, res) => {
             .then(async function(userRecord) {
                 // See the UserRecord reference doc for the contents of userRecord.
                 console.log('Successfully created new user:', userRecord.uid);
-                await storeSignInCookie(userRecord, res);
+                await res.json({
+                    customToken: await getCustomToken(userRecord),
+                });
             })
             .catch(function(error) {
                 console.log('Error creating new user:', error);
+                res.json({
+                    failMsg: error.message,
+                });
             });
 
 });
 
-async function storeSignInCookie(user, res) {
-    await firebaseAdmin.auth().createCustomToken(user.uid)
-        .then(async function(token) {
-            // Set session expiration to 5 days.
-            const expiresIn = 60 * 60 * 24 * 5 * 1000;
-            // Create the session cookie. This will also verify the ID token in the process.
-            // The session cookie will have the same claims as the ID token.
-            // To only allow session cookie setting on recent sign-in, auth_time in ID token
-            // can be checked to ensure user was recently signed in before creating a session cookie.
-            await firebaseAdmin.auth().createSessionCookie(token, {expiresIn})
-                .then((sessionCookie) => {
-                    // Set cookie policy for session cookie.
-                    const options = {maxAge: expiresIn, httpOnly: true, secure: true};
-                    res.cookie('session', sessionCookie, options);
-                    res.end(JSON.stringify({status: 'success'}));
-                }, error => {
-                    console.log(error);
-                    res.status(401).send('UNAUTHORIZED REQUEST!');
-                });
-
+async function getCustomToken(user) {
+    return await firebaseAdmin.auth().createCustomToken(user.uid)
+        .then(function(customToken) {
+            return customToken;
         })
         .catch(function(error) {
             console.log('Error creating custom token:', error);
@@ -62,9 +51,10 @@ async function storeSignInCookie(user, res) {
 }
 
 // auth sign out
-authRouter.post('/sign-out', (req, res) => {
-
-});
+// sign out handled from front end
+// authRouter.post('/sign-out', (req, res) => {
+//
+// });
 
 // auth with google
 authRouter.get('/google', (req, res) => {

@@ -22,11 +22,14 @@
             The Forums
         </a>
         <div class="nav navbar-right">
-            <button class="btn" data-toggle="modal" data-target="#signUpFormModal">
+            <button id="signUpBtn" class="btn" data-toggle="modal" data-target="#signUpFormModal">
                 Sign Up
             </button>
-            <button class="btn" data-toggle="modal" data-target="#signInFormModal">
+            <button id="signInBtn" class="btn" data-toggle="modal" data-target="#signInFormModal">
                 Login
+            </button>
+            <button id="signOutBtn" class="btn" onclick="firebaseSignOut()">
+                Logout
             </button>
         </div>
     </nav>

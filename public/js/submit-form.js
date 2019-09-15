@@ -90,25 +90,13 @@ function editClick(btn) {
 
 // will remove all modal backdrops
 function closeModal(modal) {
-    modal.querySelector('button.close').click();
+    modal.querySelector('.modal-header > button.close').click();
     modal.querySelector('form').reset();
-    // change state like in hidden modal
-    // modal.classList.remove('show');
-    // modal.setAttribute('aria-hidden', 'true');
-    // modal.setAttribute('style', 'display: none');
-    // modal.removeAttribute('aria-modal');
-    //
-    // // get modal backdrops
-    // const modalsBackdrops = document.getElementsByClassName('modal-backdrop');
-    //
-    // // remove every modal backdrop
-    // for(let i=0; i<modalsBackdrops.length; i++) {
-    //     document.body.removeChild(modalsBackdrops[i]);
-    // }
-    //
-    // document.body.removeAttribute('style');
-    // document.body.classList.remove('modal-open');
 }
+
+// function closeModalAlert(modal) {
+//     modal.querySelector('.alert > button.close').click();
+// }
 
 
 // PARSE FORM //
@@ -203,9 +191,17 @@ function handelSignInResponse(data) {
     closeModal(modal);
 }
 
-function handelSignUpResponse(data) {
-    const modal = document.getElementById('signUpFormModal');
-    closeModal(modal);
+async function handelSignUpResponse(data) {
+    if (await firebaseSignIn(data.customToken) === true) {
+        const modal = document.getElementById('signUpFormModal');
+        closeModal(modal);
+        console.log("you are now logged in");
+    } else {
+        console.log("sign up failed");
+        console.log(data.failMsg);
+        document.querySelector('#sign-up-alert > span').textContent = data.failMsg;
+        document.getElementById('sign-up-alert').classList.remove('d-none')
+    }
 }
 
 function handelSignOutResponse(data) {
@@ -216,16 +212,34 @@ function handelSignOutResponse(data) {
 
 // FIREBASE AUTH //
 
-// firebase initialized with the auth app in layout.hbs
-// if (firebase === null) {
-//     firebase = {};
-// }
-//
-// function firebaseSignIn(token) {
-//     firebase.auth().signInWithCustomToken(token).catch(function(error) {
-//         // Handle Errors here.
-//         var errorCode = error.code;
-//         var errorMessage = error.message;
-//         // ...
-//     });
-// }
+const auth = firebase.auth();
+
+async function firebaseSignIn(token) {
+    if (typeof token !== "string") {
+        // if token is bad dont bother trying to sign in
+        return false;
+    }
+    return await auth.signInWithCustomToken(token)
+        .then(function() {
+            return true;
+        })
+        .catch(function(error) {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        return false;
+        });
+}
+
+async function firebaseSignOut() {
+    return await auth.signOut()
+        .then(function() {
+            console.log('user signed out');
+        })
+}
+
+// DISPLAY USER //
+
+
+
+

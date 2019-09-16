@@ -1,74 +1,45 @@
-Assignment 3 - Persistence: Two-tier Web Application with Flat File Database, Express server, and CSS template
-===
+# The Forums
 
-Due: September 16th, by 11:59 AM.
+http://a3-jameskajon.glitch.me
 
-This assignnment continues where we left off, extending it to use the most popular Node.js server framework (express), a flat file database suitable for small applications (lowdb), and a CSS application framework / template of your choice (Boostrap, Material Design, Semantic UI, Pure etc.)
+## Goal
+My project is a forum which is creatively named "The Forums". Users can post, edit, or delete any message on the forum.
 
+This project aims to helps people communicate big ideas in an simple way. The challenges are giving people the space to write everything they want while still having it not appear daunting to read. The design of the website is colorful yet rather minimalistic. This helps the users focus on the content.
 
-Baseline Requirements
----
+## Authentication Strategy / Database
+I used Google's Firebase for both my database and authentication. I handled all database interaction on the backend as directed to by the professor using Firestore (the newer database option in Firebase). I also handled native sign ups on the backend. But any logout or login (including oAuth login/sign ups) is done on the front end. I used Google and GitHub for oAuth logins. One limitation is that you cannot currently use multiple account which have the same email address but I thing that's actually good since the same having multiple logins for the same page is pretty confusing to the user. There is a descriptive error message when trying to login if the user tries to sign in with the same email again.
 
-Your application is required to implement the following functionalities:
+### Testing accounts
+There are three accounts below that can be used to login using each of the three login methods. These three account all have posted messages. You are also welcome to make new accounts by clicking on the sign up button or to login with any other GitHub or Google account.
 
-- a `Server`, created using Express (no alternatives will be accepted for this assignment)
-- a `Results` functionality which shows the entire dataset residing in the server's memory
-- a `Form/Entry` functionality which allows users to add, modify, and delete data items (must be all three!) associated with their user name / account.
-- Use of at least five [Express middleware packages](https://expressjs.com/en/resources/middleware.html). Explore! 
-- Basic authentication using the [Passport middleware](http://www.passportjs.org) for Express (this counts as one of your five middleware packages). We encourage using the Local strategy, but OAuth (Open Authentication) can also be used for additional technical achievement. The course staff cannot help you with the various flavors of OAuth strategies. YOU MUST PROVIDE US WITH ACCOUNT CREDENTIALS TO LOGIN TO YOUR APPLICATION IF YOU USE OAUTH. The course staff cannot be expected to have credentials for any particular OAuth service.
-- Persistent data storage in between server sessions. [lowdb](https://github.com/typicode/lowdb) is a suitable database package for this assignment and will be discussed in class.
-- Use of a [CSS framework or template](https://github.com/troxler/awesome-css-frameworks). This should do the bulk of your styling/CSS for you and be appropriate to your application. For example, don't use [NES.css](https://nostalgic-css.github.io/NES.css/) (which is awesome!) unless you're creating a game or some type of retro 80s site.
+#### Native (sign in with username and password)
+    testdevww@wpi.edu
+    testdevww
+    
+#### Google
+    testdevacc10
+    testwebware10
 
-Your application is required to demonstrate the use of the following concepts:
+#### GitHub
+    testdevacc11
+    testwebware11
 
-HTML:
-- HTML input tags and form fields of various flavors (`<textarea>`, `<input>`, checkboxes, radio buttons etc.)
-- HTML that can display all data *for a particular authenticated user*. Note that this is different from the last assignnment, which required the display of all data in memory on the server.
+## CSS Framework
+I used Bootstrap since I have experience with it. I have a minimal amount of css in my style.css file. I resorted to using style tags in only one situation.
 
-Note that it might make sense to have two simple pages for this assignment, one that handles login / authentication, and one that contains the rest of your application. For this assignment, it is acceptable to simply create new user accounts upon login if none exist, however, you must alert your users to this fact. If you're not using OAuth 
+## Middleware
+- Firebase admin auth: allows authentication on backend including sessions
+- Firebase admin db: allows interaction with the cloud database I'm using
+- morgan: logs http requests and responses
+- body-parser: parses the body of incoming http post requests into json
+- express-handlebars: is a template engine. allows me to write more readable and maintainable code
 
-CSS:
-- CSS styling should primarily be provided by your chosen template/framework. Oftentimes a great deal of care has been put into designing CSS templates; don't override their stylesheets unless you are extremely confident in your graphic design capabilities. The idea is to use CSS templates that give you a professional looking design aesthetic without requiring you to be a graphic designer yourself.
-
-JavaScript:
-- At minimum, a small amount of front-end JavaScript to get / fetch data from the server. See the [previous assignment](https://github.com/cs4241-19a/a2-shortstack) for reference.
-
-Node.js:
-- A server using Express, at least five pieces of Express middleware, and a persistent database (a flat file using lowdb is great).
-
-Deliverables
----
-
-Do the following to complete this assignment:
-
-1. Implement your project with the above requirements. A good potential starting point is to use the "hello-express" project template inside of Glitch; this appears as an option when you hit the "New Project" button. Use the work you did in the last assignment as a reference to implement functionality, as well as the notes from class on 9/9 and 9/12.
-2. If you developed your project locally, deploy your project to Glitch, and fill in the appropriate fields in your package.json file.
-3. Test your project to make sure that when someone goes to your main page on Glitch, it displays correctly.
-4. Ensure that your project has the proper naming scheme `a3-yourname` so we can find it.
-5. Fork this repository and modify the README to the specifications below. You do not need to include any of your project files in this repo (we will see those on Glitch), you only need to update and commit the README file.
-6. Create and submit a Pull Request to the original repo. Name the pull request using the following template: `a3-gitname-firstname-lastname`.
-
-Sample Readme (delete the above when you're ready to submit, and modify the below so with your links and descriptions)
----
-
-## Your Web Application Title
-
-your glitch link e.g. http://a3-charlieroberts.glitch.me
-
-Include a very brief summary of your project here. Images are encouraged, along with concise, high-level text. Be sure to include:
-
-- the goal of the application
-- challenges you faced in realizing the application
-- what authentication strategy / database you chose to use and why (choosing one because it seemed the easiest to implement is perfectly acceptable)
-- what CSS framework you used and why.
-  - include any modifications to the CSS framework you made via custom CSS you authored.
-- the five Express middleware packages you used and a short (one sentence) summary of what each one does.
 
 ## Technical Achievements
-- **Tech Achievement 1**: I used OAuth authentication via the GitHub strategy
-- **Tech Achievement 2**: I used over ten Express middleware packages, enabling me to create a server that...
+- **Tech Achievement 1**: I used OAuth authentication via the GitHub and Google strategy
+- **Tech Achievement 2**: I used Firebase for authentication, making database and user info (such as a name) easy to link. This also allowed me to maintain multiple user accounts with ease.
 
 ### Design/Evaluation Achievements
-- **Design Achievement 1**: I tested my application using screen reading software, and found that...
-- **Design Achievement 2**: I followed best practices for accessibility, including providing alt attributes for images and using semantic HTML. There are no `<div>` or `<span>` elements in my document.
-- **Design Achievement 3**: We tested the application with n=X users, finding that...
+- **Design Achievement 1**: I tested my application using screen Mac's VoiceOver. I found it surprisingly easy to use with my eyes closed after following half of the VoiceOver tutorial. I helps that I wrote the website, but also I I think my choise of elements really worked out. All messages are in one column of a table with metadata about that message in the column before. Is's easy to read the entire form conversation as well as to read a message 
+- **Design Achievement 2**: I tested the application with www.webfx.com finding that my UI can be understood by people 7-8 years old and up

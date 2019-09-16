@@ -23,13 +23,29 @@
 
 /* FORM */
 
-.table-add-row {
-    visibility: hidden;
+/* no good. messes with screan reader (voiceover) */
+/*.table-add-row {*/
+/*    visibility: hidden;*/
+/*}*/
+/*.table-add-row button {*/
+/*    visibility: visible;  */
+/*    */
+/*}*/
+
+.table-add-row-table {
+    border-bottom: 0!important;
 }
 
-.table-add-row button {
-    visibility: visible;
+.table-add-row {
+    background-color: transparent!important;
+    border: 0!important;
 }
+
+.table-add-row > td {
+    border: 0!important;
+
+}
+
 
 /* forum text */
 

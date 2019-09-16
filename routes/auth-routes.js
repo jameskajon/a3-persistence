@@ -2,9 +2,7 @@ const express = require('express');
 const authRouter = express.Router();
 
 const firebaseAdmin = require("firebase-admin");
-
 const auth = firebaseAdmin.auth();
-
 
 authRouter.post('/sign-up', async (req, res) => {
     const data = req.body;
@@ -80,5 +78,21 @@ authRouter.get('/google', (req, res) => {
 //         });
 // }
 // deleteAllUsers();
+
+// // create anon account
+// function createAnon() {
+//     console.log('anon created');
+//     auth.createUser({
+//         // email: 'anon@anon.anon',
+//         emailVerified: false,
+//         // phoneNumber: '+11234567890',
+//         password: 'Anons account is disabled. Sorry!',
+//         displayName: 'anonymous',
+//         // photoURL: 'http://www.example.com/12345678/photo.png',
+//         disabled: true
+//     })
+//
+// }
+// createAnon();
 
 module.exports = authRouter;

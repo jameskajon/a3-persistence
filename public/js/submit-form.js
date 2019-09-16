@@ -7,7 +7,7 @@ function submit(e, url, dataParser, handelResponse) {
     console.log("form data: ", data);
 
     if (jsonData.warningStatus === "failed") {
-        const warning = e.target.parentElement.parentElement.querySelector('div#warningAlerts > * > span');
+        const warning = e.target.parentElement.parentElement.querySelector('div#warningAlerts span');
         warning.textContent = jsonData.warningMsg;
         warning.parentElement.classList.remove('d-none');
         return false;
@@ -84,22 +84,31 @@ window.onload = async function() {
 
 let curMessageId;
 let curForumId;
+let curMessageUid;
+
 function addClick(btn) {
     curForumId = btn.target.dataset.forumid;
 }
+
 function deleteClick(btn) {
     let link = btn.target.parentElement;
     curMessageId = link.dataset.messageid;
     curForumId = document.querySelector('.add-btn').dataset.forumid;
+    curMessageUid = link.parentElement.parentElement.querySelector('a').dataset.uid;
+    // hide alert
+    document.querySelector('#deleteFormModal div.alert').classList.add('d-none');
 }
+
 function editClick(btn) {
     let link = btn.target.parentElement;
     curMessageId = link.dataset.messageid;
     curForumId = document.querySelector('.add-btn').dataset.forumid;
+    curMessageUid = link.parentElement.parentElement.querySelector('a').dataset.uid;
+    // hide alert
+    document.querySelector('#editFormModal div.alert').classList.add('d-none');
+
     let curText = link.parentElement.parentElement.parentElement.lastElementChild.textContent.trim();
-    let editMotelMessage = document.querySelector("#editFormModal textarea#message");
-    console.log(curText);
-    console.log(editMotelMessage);
+    let editMotelMessage = document.querySelector("#editFormModal textarea#edit-message");
     editMotelMessage.value = curText;
 }
 
@@ -126,6 +135,7 @@ function parseAddThreadForm() {
         action: "ADDTHREAD",
         title: document.getElementById("title").value,
         message: document.getElementById("add-thread-message").value,
+        ...modifyingAllowed(),
         ...getCurUid(),
     }
 }
@@ -145,6 +155,7 @@ function parseDeleteForm() {
         action: "DELETE",
         messageId: curMessageId,
         forumId: curForumId,
+        ...modifyingAllowed(),
         ...getCurUid(),
     }
 }
@@ -155,6 +166,7 @@ function parseEditForm() {
         messageId: curMessageId,
         forumId: curForumId,
         message: document.querySelector("#editFormModal textarea#edit-message").value,
+        ...modifyingAllowed(),
         ...getCurUid(),
     }
 }
@@ -250,6 +262,17 @@ function getCurUid() {
     } else {
         return {
             uid: user.uid,
+        }
+    }
+}
+
+// get uid to send to backend
+function modifyingAllowed() {
+    const uid  = (auth.currentUser !== null) ? auth.currentUser.uid : null;
+    if (uid !== curMessageUid) {
+        return {
+            warningStatus: "failed",
+            warningMsg: "You do not have permission to modify this message.",
         }
     }
 }

@@ -48,7 +48,8 @@
 
 /* MODALS */
 
-.modal-open{
-    overflow:auto;
-    padding-right:0 !important;
-}
+/* counteract bootstrap right padding to accommodate disappearing of scrollbar
+/*.modal-open{*/
+/*    overflow:auto;*/
+/*    padding-right:0 !important;*/
+/*}*/

@@ -23,12 +23,26 @@
         </a>
         <span id="userDisplayName"></span>
         <div class="nav navbar-right">
+
             <button id="signUpBtn" class="btn" data-toggle="modal" data-target="#signUpFormModal">
                 Sign Up
             </button>
-            <button id="signInBtn" class="btn" data-toggle="modal" data-target="#signInFormModal">
-                Login
-            </button>
+            <div id="signInMenuDiv" class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="signInMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Login Options
+                </button>
+                <div class="dropdown-menu dropdown-menu-right text-white" aria-labelledby="signInMenuButton">
+                    <button id="signInBtn" style="white-space: nowrap; border: 0;" class="btn-social btn-info py-1" data-toggle="modal" data-target="#signInFormModal">
+                        Login with email and password
+                    </button>
+                    <button class="dropdown-item btn-social btn-google" onclick="googleSignIn()">
+                        <span class="fa fa-google"></span> Login with Google
+                    </button>
+                    <button class="dropdown-item btn-social btn-github" onclick="githubSignIn()">
+                        <span class="fa fa-github"></span> Login with GitHub
+                    </button>
+                </div>
+            </div>
             <button id="signOutBtn" class="btn" onclick="firebaseSignOut()">
                 Logout
             </button>

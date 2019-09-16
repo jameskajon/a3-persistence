@@ -135,7 +135,6 @@ function parseAddThreadForm() {
         action: "ADDTHREAD",
         title: document.getElementById("title").value,
         message: document.getElementById("add-thread-message").value,
-        ...modifyingAllowed(),
         ...getCurUid(),
     }
 }
@@ -246,7 +245,6 @@ async function handelSignUpResponse(data) {
 }
 
 
-
 // FIREBASE AUTH //
 
 const auth = firebase.auth();
@@ -325,11 +323,11 @@ function update(user) {
 function updateNavButtons(user) {
     if (user === null || user === undefined) {
         document.getElementById('signUpBtn').classList.remove('d-none');
-        document.getElementById('signInBtn').classList.remove('d-none');
+        document.getElementById('signInMenuDiv').classList.remove('d-none');
         document.getElementById('signOutBtn').classList.add('d-none');
     } else {
         document.getElementById('signUpBtn').classList.add('d-none');
-        document.getElementById('signInBtn').classList.add('d-none');
+        document.getElementById('signInMenuDiv').classList.add('d-none');
         document.getElementById('signOutBtn').classList.remove('d-none');
     }
 }
@@ -337,5 +335,47 @@ function updateNavButtons(user) {
 function updateNavName(user) {
     document.querySelector('nav> #userDisplayName').textContent = (user === null || user === undefined) ? "" : "Welcome " + user.displayName;
 }
+
+
+// OAuth //
+
+function googleSignIn() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    // provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    provider.addScope('profile');
+    provider.addScope('email');
+    auth.signInWithPopup(provider).then(function(result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const token = result.credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        console.log('Google user signed in ', result.credential.accessToken, result.user)
+    }).catch(function(error) {
+        if (error.code === 'auth/account-exists-with-different-credential') {
+            alert('You have signed up with a different provider for that email.');
+            // Handle linking here if your app allows it.
+        } else {
+            console.log("Google sign in error", error)
+        }
+    });
+}
+
+function githubSignIn() {
+    const provider = new firebase.auth.GithubAuthProvider();
+    provider.addScope('read:user');
+    provider.addScope('user:email');
+    auth.signInWithPopup(provider).then(function(result) {
+        console.log('Github user signed in ', result.credential.accessToken, result.user)
+    }).catch(function(error) {
+        if (error.code === 'auth/account-exists-with-different-credential') {
+            alert('You have signed up with a different provider for that email.');
+            // Handle linking here if your app allows it.
+        } else {
+            console.error("Github sign in error", error);
+        }
+    });
+
+}
+
 
 

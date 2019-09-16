@@ -46,6 +46,12 @@
     visibility: visible;
 }
 
+/* forum text */
+
+.forum-text {
+    white-space: pre-wrap;
+}
+
 /* MODALS */
 
 /* counteract bootstrap right padding to accommodate disappearing of scrollbar
